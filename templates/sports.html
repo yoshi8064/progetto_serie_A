@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partite Serie A</title>
+    <link rel="stylesheet" href="/styles/sports_style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calendario Partite Serie A</h1>
+            <p class="subtitle">Prossimi 7 giorni</p>
+        </header>
+
+        <div id="matches-container" class="matches-list">
+            <div class="loading">Caricamento partite...</div>
+        </div>
+    </div>
+
+    <script>
+        // Ricevi i dati iniziali dal template Tornado
+        const initialMatches = {% raw matches_data %};
+
+        console.log('Dati ricevuti:', initialMatches);
+        console.log('Numero partite:', initialMatches.length);
+
+        // Configurazione URL per il reindirizzamento
+        const MATCH_DETAIL_URL = '/sports/';
+
+        // Funzione per determinare lo stato della partita
+        function getMatchStatus(match) {
+            if (match.match_live === '1') {
+                return { status: 'live', label: 'IN DIRETTA', class: 'status-live' };
+            } else if (match.match_status === 'Finished' || (match.match_hometeam_ft_score && match.match_hometeam_ft_score !== '')) {
+                return { status: 'finished', label: 'FINITA', class: 'status-finished' };
+            } else {
+                return { status: 'scheduled', label: 'IN PROGRAMMA', class: 'status-scheduled' };
+            }
+        }
+
+        // Funzione per formattare la data
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('it-IT', options);
+        }
+
+        // Funzione per creare l'HTML di una partita
+        function createMatchCard(match) {
+            const statusInfo = getMatchStatus(match);
+            const formattedDate = formatDate(match.match_date);
+
+            // Determina il punteggio da mostrare
+            let scoreDisplay = 'VS';
+            if (statusInfo.status === 'finished' || statusInfo.status === 'live') {
+                const homeScore = match.match_hometeam_score || match.match_hometeam_ft_score || '0';
+                const awayScore = match.match_awayteam_score || match.match_awayteam_ft_score || '0';
+                scoreDisplay = `${homeScore} - ${awayScore}`;
+            }
+
+            return `
+                <div class="match-card" onclick="redirectToMatch('${match.match_id}')">
+                    <div class="match-header">
+                        <div class="league-info">
+                            <img src="${match.league_logo}" alt="${match.league_name}" class="league-logo" onerror="this.style.display='none'">
+                            <span class="league-name">${match.league_name}</span>
+                        </div>
+                        <span class="match-status ${statusInfo.class}">${statusInfo.label}</span>
+                    </div>
+
+                    <div class="match-datetime">
+                        <span class="match-date">${formattedDate}</span>
+                        <span class="match-time">${match.match_time}</span>
+                    </div>
+
+                    <div class="match-content">
+                        <div class="team home-team">
+                            <img src="${match.team_home_badge}" alt="${match.match_hometeam_name}" class="team-badge" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\'%3E%3Crect fill=\'%23ddd\' width=\'50\' height=\'50\'/%3E%3C/svg%3E'">
+                            <span class="team-name">${match.match_hometeam_name}</span>
+                        </div>
+
+                        <div class="match-score">
+                            <span class="score">${scoreDisplay}</span>
+                        </div>
+
+                        <div class="team away-team">
+                            <img src="${match.team_away_badge}" alt="${match.match_awayteam_name}" class="team-badge" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\'%3E%3Crect fill=\'%23ddd\' width=\'50\' height=\'50\'/%3E%3C/svg%3E'">
+                            <span class="team-name">${match.match_awayteam_name}</span>
+                        </div>
+                    </div>
+
+                    <div class="match-footer">
+                        <span class="match-round">Giornata ${match.match_round}</span>
+                        ${match.match_stadium ? `<span class="match-stadium">${match.match_stadium}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Funzione per reindirizzare alla pagina di dettaglio
+        function redirectToMatch(matchId) {
+            window.location.href = `${MATCH_DETAIL_URL}${matchId}`;
+        }
+
+        // Funzione per raggruppare partite per data
+        function groupMatchesByDate(matches) {
+            const grouped = {};
+
+            matches.forEach(match => {
+                const date = match.match_date;
+                if (!grouped[date]) {
+                    grouped[date] = [];
+                }
+                grouped[date].push(match);
+            });
+
+            return grouped;
+        }
+
+        // Funzione per renderizzare tutte le partite
+        function renderMatches(matches) {
+            const container = document.getElementById('matches-container');
+
+            if (!matches || matches.length === 0) {
+                container.innerHTML = '<div class="no-matches">Nessuna partita disponibile nei prossimi 7 giorni</div>';
+                return;
+            }
+
+            // Ordina le partite per data e ora
+            matches.sort((a, b) => {
+                const dateA = new Date(a.match_date + ' ' + a.match_time);
+                const dateB = new Date(b.match_date + ' ' + b.match_time);
+                return dateA - dateB;
+            });
+
+            const groupedMatches = groupMatchesByDate(matches);
+            let html = '';
+
+            // Crea sezioni per ogni giorno
+            Object.keys(groupedMatches).sort().forEach(date => {
+                const dayMatches = groupedMatches[date];
+                const formattedDate = formatDate(date);
+
+                html += `
+                    <div class="date-section">
+                        <h2 class="date-header">${formattedDate}</h2>
+                        <div class="date-matches">
+                            ${dayMatches.map(match => createMatchCard(match)).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // WebSocket per aggiornamenti in tempo reale
+        function setupWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${protocol}//${window.location.host}/ws/matches`);
+
+            ws.onopen = function() {
+                console.log('WebSocket connesso');
+            };
+
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data.type === 'update') {
+                        renderMatches(data.matches);
+                        console.log('Partite aggiornate via WebSocket');
+                    }
+                } catch (error) {
+                    console.error('Errore parsing WebSocket:', error);
+                }
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket disconnesso. Tentativo di riconnessione...');
+                setTimeout(setupWebSocket, 5000);
+            };
+        }
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Inizializzazione pagina...');
+            renderMatches(initialMatches);
+            setupWebSocket();
+        });
+    </script>
+</body>
+</html>

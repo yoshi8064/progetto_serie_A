@@ -1,0 +1,594 @@
+/* match_style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: white;
+    padding: 20px;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* HEADER */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.back-button:hover {
+    background: #f0f0f0;
+}
+
+.header-content {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.header-content h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+/* MATCH STATUS */
+.match-status {
+    display: inline-block;
+    padding: 6px 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 5px 0;
+    text-transform: uppercase;
+}
+
+.status-finished {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.status-live {
+    background-color: #ff4444;
+    color: white;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-scheduled {
+    background-color: #2196F3;
+    color: white;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* MATCH INFO */
+.match-info {
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.match-datetime {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* TEAMS CONTAINER - ORIZZONTALE */
+.teams-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 25px 0;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.team-badge {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.team-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.score-section {
+    flex: 0.5;
+    text-align: center;
+}
+
+.score {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin: 5px 0;
+}
+
+.score-time {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.match-details {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.detail-item {
+    text-align: center;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    background: #f0f0f0;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-button:hover {
+    background: #e0e0e0;
+}
+
+.tab-button.active {
+    background: white;
+    color: #667eea;
+    border-bottom: 3px solid #667eea;
+}
+
+/* TAB CONTENT */
+.tab-content {
+    display: none;
+    padding: 20px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* EVENTS LAYOUT - Stile FotMob */
+.events-container {
+    display: grid;
+    grid-template-columns: 1fr 2px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.center-spacer {
+    border-left: 2px solid #eaeaea;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.events-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.events-team-title {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Stile eventi FotMob */
+.event-item {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.event-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Eventi casa a SINISTRA */
+.home-events .event-item {
+    flex-direction: row;
+    text-align: left;
+}
+
+/* Eventi trasferta a DESTRA */
+.away-events .event-item {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.event-icon {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Colori icone */
+.goal-icon {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.yellow-card-icon {
+    color: #FFC107;
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.red-card-icon {
+    color: #F44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.sub-icon {
+    color: #2196F3;
+    background: rgba(33, 150, 243, 0.1);
+}
+
+.event-text {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.4;
+}
+
+.event-minute {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.no-events {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 1px dashed #ddd;
+}
+
+/* FORMAZIONI */
+.section-title {
+    color: #667eea;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.lineup-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.lineup-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.lineup-section h3 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.lineup-section h4 {
+    color: #666;
+    margin: 15px 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s;
+}
+
+.player-item:hover {
+    transform: translateX(5px);
+    background: #f0f7ff;
+}
+
+.player-number {
+    background: #667eea;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.player-name {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+}
+
+/* ALLENATORI - FIX BIANCO SU BIANCO */
+.coach-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.coach-section h4 {
+    color: #666;
+    margin: 15px 0 8px 0;
+    font-size: 0.95rem;
+}
+
+.coach-name {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    border-left: 4px solid #4CAF50;
+    font-size: 1rem;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* STATISTICHE */
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border: 1px solid #eaeaea;
+}
+
+.stat-header {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-bar-container {
+    margin-top: 10px;
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 30px;
+    background: #f0f0f0;
+    border-radius: 15px;
+    padding: 0 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    opacity: 0.3;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+.stat-value {
+    font-weight: bold;
+    font-size: 1rem;
+    z-index: 2;
+    position: relative;
+}
+
+.home-value {
+    color: #667eea;
+}
+
+.away-value {
+    color: #764ba2;
+}
+
+.no-stats {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-style: italic;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 1px dashed #ddd;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        border-radius: 10px;
+        margin: 0;
+    }
+
+    header {
+        padding: 15px 20px;
+    }
+
+    .back-button {
+        position: static;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .teams-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .team {
+        flex-direction: row;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .team-badge {
+        width: 60px;
+        height: 60px;
+    }
+
+    .events-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .center-spacer {
+        display: none;
+    }
+
+    .home-events .event-item,
+    .away-events .event-item {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .lineup-container {
+        grid-template-columns: 1

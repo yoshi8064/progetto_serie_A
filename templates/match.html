@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettaglio Partita</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles/match_style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/sports" class="back-button">
+                <i class="fas fa-arrow-left"></i> Torna al calendario
+            </a>
+            <div class="header-content">
+                <h1>DETTAGLIO PARTITA</h1>
+                <div id="match-status" class="match-status"></div>
+            </div>
+        </header>
+
+        <div class="match-main">
+            <!-- Info partita -->
+            <div class="match-info">
+                <div id="match-datetime" class="match-datetime"></div>
+
+                <div class="teams-container">
+                    <div class="team home-team">
+                        <img id="home-badge" src="" alt="" class="team-badge">
+                        <div id="home-name" class="team-name"></div>
+                    </div>
+
+                    <div class="score-section">
+                        <div id="score" class="score"></div>
+                        <div id="match-time" class="score-time"></div>
+                    </div>
+
+                    <div class="team away-team">
+                        <img id="away-badge" src="" alt="" class="team-badge">
+                        <div id="away-name" class="team-name"></div>
+                    </div>
+                </div>
+
+                <div class="match-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Giornata</div>
+                        <div id="match-round" class="detail-value"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Stadio</div>
+                        <div id="match-stadium" class="detail-value"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Arbitro</div>
+                        <div id="match-referee" class="detail-value"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('events')">
+                    <i class="fas fa-futbol"></i> Cronologia
+                </button>
+                <button class="tab-button" onclick="showTab('lineup')">
+                    <i class="fas fa-users"></i> Formazioni
+                </button>
+                <button class="tab-button" onclick="showTab('stats')">
+                    <i class="fas fa-chart-bar"></i> Statistiche
+                </button>
+            </div>
+
+            <!-- Contenuto tabs -->
+            <div class="tab-content active" id="events-tab">
+                <div class="events-container">
+                    <div class="events-column home-events">
+                        <h3 id="home-team-title-events" class="events-team-title"></h3>
+                        <div id="home-events-list" class="events-list">
+                            <!-- Eventi casa -->
+                        </div>
+                    </div>
+
+                    <div class="center-spacer"></div>
+
+                    <div class="events-column away-events">
+                        <h3 id="away-team-title-events" class="events-team-title"></h3>
+                        <div id="away-events-list" class="events-list">
+                            <!-- Eventi trasferta -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="lineup-tab">
+                <h2 class="section-title"><i class="fas fa-tshirt"></i> Formazioni</h2>
+                <div class="lineup-container">
+                    <div class="lineup-section" id="home-lineup">
+                        <h3 id="home-team-title"></h3>
+                        <h4><i class="fas fa-star"></i> Titolari</h4>
+                        <div id="home-starters" class="players-list"></div>
+                        <h4><i class="fas fa-exchange-alt"></i> Panchina</h4>
+                        <div id="home-subs" class="players-list"></div>
+                        <div class="coach-section">
+                            <h4><i class="fas fa-user-tie"></i> Allenatore</h4>
+                            <div id="home-coach" class="coach-name"></div>
+                        </div>
+                    </div>
+
+                    <div class="lineup-section" id="away-lineup">
+                        <h3 id="away-team-title"></h3>
+                        <h4><i class="fas fa-star"></i> Titolari</h4>
+                        <div id="away-starters" class="players-list"></div>
+                        <h4><i class="fas fa-exchange-alt"></i> Panchina</h4>
+                        <div id="away-subs" class="players-list"></div>
+                        <div class="coach-section">
+                            <h4><i class="fas fa-user-tie"></i> Allenatore</h4>
+                            <div id="away-coach" class="coach-name"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="stats-tab">
+                <h2 class="section-title"><i class="fas fa-chart-pie"></i> Statistiche Partita</h2>
+                <div class="statistics-grid" id="statistics-container">
+                    <!-- Le statistiche saranno inserite qui via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ricevi i dati della partita dal template Tornado
+        const matchData = {% raw match_data_json %};
+
+        console.log('Dati partita:', matchData);
+
+        function showTab(tabName) {
+            // Nascondi tutti i tab
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Rimuovi classe active da tutti i bottoni
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Mostra il tab selezionato
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Aggiungi classe active al bottone
+            event.target.classList.add('active');
+        }
+
+        function getMatchStatus(match) {
+            if (match.match_live === '1') {
+                return {
+                    status: 'live',
+                    label: 'IN CORSO',
+                    class: 'status-live',
+                    time: 'Live'
+                };
+            } else if (match.match_status === 'Finished') {
+                return {
+                    status: 'finished',
+                    label: 'TERMINATA',
+                    class: 'status-finished',
+                    time: 'Fine'
+                };
+            } else {
+                return {
+                    status: 'scheduled',
+                    label: 'IN PROGRAMMA',
+                    class: 'status-scheduled',
+                    time: 'Da giocare'
+                };
+            }
+        }
+
+        function formatDateTime(match) {
+            const date = new Date(match.match_date);
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('it-IT', options) + ' - ' + match.match_time;
+        }
+
+        function renderMatchInfo() {
+            const status = getMatchStatus(matchData);
+
+            // Aggiorna stato partita
+            const statusElement = document.getElementById('match-status');
+            statusElement.className = 'match-status ' + status.class;
+            statusElement.textContent = status.label;
+
+            // Aggiorna data e ora
+            document.getElementById('match-datetime').textContent = formatDateTime(matchData);
+
+            // Aggiorna nomi squadre
+            document.getElementById('home-name').textContent = matchData.match_hometeam_name;
+            document.getElementById('away-name').textContent = matchData.match_awayteam_name;
+            document.getElementById('home-team-title').textContent = matchData.match_hometeam_name;
+            document.getElementById('away-team-title').textContent = matchData.match_awayteam_name;
+            document.getElementById('home-team-title-events').textContent = matchData.match_hometeam_name;
+            document.getElementById('away-team-title-events').textContent = matchData.match_awayteam_name;
+
+            // Aggiorna stemmi
+            document.getElementById('home-badge').src = matchData.team_home_badge;
+            document.getElementById('home-badge').alt = matchData.match_hometeam_name;
+            document.getElementById('away-badge').src = matchData.team_away_badge;
+            document.getElementById('away-badge').alt = matchData.match_awayteam_name;
+
+            // Gestione errori immagini
+            const errorImg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3C/svg%3E';
+            document.getElementById('home-badge').onerror = function() {
+                this.src = errorImg;
+            };
+            document.getElementById('away-badge').onerror = function() {
+                this.src = errorImg;
+            };
+
+            // Aggiorna punteggio
+            let scoreDisplay = 'VS';
+            if (status.status === 'finished' || status.status === 'live') {
+                const homeScore = matchData.match_hometeam_score || matchData.match_hometeam_ft_score || '0';
+                const awayScore = matchData.match_awayteam_score || matchData.match_awayteam_ft_score || '0';
+                scoreDisplay = `${homeScore} - ${awayScore}`;
+            }
+            document.getElementById('score').textContent = scoreDisplay;
+
+            // Aggiorna minutaggio
+            document.getElementById('match-time').textContent = status.time;
+
+            // Aggiorna dettagli
+            document.getElementById('match-round').textContent = matchData.match_round || '-';
+            document.getElementById('match-stadium').textContent = matchData.match_stadium || 'Non specificato';
+            document.getElementById('match-referee').textContent = matchData.match_referee || 'Non assegnato';
+        }
+
+        function renderEvents() {
+            const homeEventsList = document.getElementById('home-events-list');
+            const awayEventsList = document.getElementById('away-events-list');
+
+            homeEventsList.innerHTML = '';
+            awayEventsList.innerHTML = '';
+
+            // Colleziona tutti gli eventi
+            const allEvents = [];
+
+            // Gol
+            if (matchData.goalscorer && Array.isArray(matchData.goalscorer)) {
+                matchData.goalscorer.forEach(goal => {
+                    if (goal.home_scorer) {
+                        allEvents.push({
+                            time: goal.time,
+                            type: 'goal',
+                            team: 'home',
+                            player: goal.home_scorer,
+                            minute: goal.time,
+                            info: goal.score
+                        });
+                    } else if (goal.away_scorer) {
+                        allEvents.push({
+                            time: goal.time,
+                            type: 'goal',
+                            team: 'away',
+                            player: goal.away_scorer,
+                            minute: goal.time,
+                            info: goal.score
+                        });
+                    }
+                });
+            }
+
+            // Cartellini
+            if (matchData.cards && Array.isArray(matchData.cards)) {
+                matchData.cards.forEach(card => {
+                    if (card.home_fault) {
+                        allEvents.push({
+                            time: card.time,
+                            type: 'card',
+                            team: 'home',
+                            player: card.home_fault,
+                            minute: card.time,
+                            cardType: card.card
+                        });
+                    } else if (card.away_fault) {
+                        allEvents.push({
+                            time: card.time,
+                            type: 'card',
+                            team: 'away',
+                            player: card.away_fault,
+                            minute: card.time,
+                            cardType: card.card
+                        });
+                    }
+                });
+            }
+
+            // Sostituzioni
+            if (matchData.substitutions) {
+                // Casa
+                if (matchData.substitutions.home && Array.isArray(matchData.substitutions.home)) {
+                    matchData.substitutions.home.forEach(sub => {
+                        const players = sub.substitution.split('|');
+                        if (players.length === 2) {
+                            allEvents.push({
+                                time: sub.time,
+                                type: 'substitution',
+                                team: 'home',
+                                playerOut: players[0].trim(),
+                                playerIn: players[1].trim(),
+                                minute: sub.time
+                            });
+                        }
+                    });
+                }
+
+                // Trasferta
+                if (matchData.substitutions.away && Array.isArray(matchData.substitutions.away)) {
+                    matchData.substitutions.away.forEach(sub => {
+                        const players = sub.substitution.split('|');
+                        if (players.length === 2) {
+                            allEvents.push({
+                                time: sub.time,
+                                type: 'substitution',
+                                team: 'away',
+                                playerOut: players[0].trim(),
+                                playerIn: players[1].trim(),
+                                minute: sub.time
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Ordina eventi per tempo
+            allEvents.sort((a, b) => {
+                const timeA = parseTime(a.time);
+                const timeB = parseTime(b.time);
+                return timeA - timeB;
+            });
+
+            // Renderizza eventi
+            allEvents.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'event-item';
+
+                let icon = '';
+                let text = '';
+
+                if (event.type === 'goal') {
+                    icon = '<i class="fas fa-futbol goal-icon"></i>';
+                    text = `${event.player}<br><span class="event-minute">${event.minute}'</span>`;
+                } else if (event.type === 'card') {
+                    if (event.cardType.includes('red')) {
+                        icon = '<i class="fas fa-square red-card-icon"></i>';
+                    } else {
+                        icon = '<i class="fas fa-square yellow-card-icon"></i>';
+                    }
+                    text = `${event.player}<br><span class="event-minute">${event.minute}'</span>`;
+                } else if (event.type === 'substitution') {
+                    icon = '<i class="fas fa-exchange-alt sub-icon"></i>';
+                    text = `${event.playerIn}<br><span class="event-minute">${event.minute}'</span>`;
+                }
+
+                eventElement.innerHTML = `
+                    <div class="event-icon">${icon}</div>
+                    <div class="event-text">${text}</div>
+                `;
+
+                // Aggiungi alla colonna corretta
+                if (event.team === 'home') {
+                    homeEventsList.appendChild(eventElement);
+                } else {
+                    awayEventsList.appendChild(eventElement);
+                }
+            });
+
+            // Se non ci sono eventi
+            if (allEvents.length === 0) {
+                homeEventsList.innerHTML = '<div class="no-events">Nessun evento</div>';
+                awayEventsList.innerHTML = '<div class="no-events">Nessun evento</div>';
+            }
+        }
+
+        function parseTime(timeStr) {
+            if (!timeStr) return 0;
+            const parts = timeStr.split('+');
+            let total = parseInt(parts[0]) || 0;
+            if (parts[1]) {
+                total += parseInt(parts[1]) || 0;
+            }
+            return total;
+        }
+
+        function renderLineup() {
+            // Formazioni casa
+            if (matchData.lineup && matchData.lineup.home) {
+                const home = matchData.lineup.home;
+
+                // Titolari
+                const homeStarters = document.getElementById('home-starters');
+                homeStarters.innerHTML = '';
+                if (home.starting_lineups && Array.isArray(home.starting_lineups)) {
+                    home.starting_lineups.forEach(player => {
+                        const playerElement = document.createElement('div');
+                        playerElement.className = 'player-item';
+                        playerElement.innerHTML = `
+                            <div class="player-number">${player.lineup_number || ''}</div>
+                            <div class="player-name">${player.lineup_player}</div>
+                        `;
+                        homeStarters.appendChild(playerElement);
+                    });
+                }
+
+                // Panchina
+                const homeSubs = document.getElementById('home-subs');
+                homeSubs.innerHTML = '';
+                if (home.substitutes && Array.isArray(home.substitutes)) {
+                    home.substitutes.forEach(player => {
+                        const playerElement = document.createElement('div');
+                        playerElement.className = 'player-item';
+                        playerElement.innerHTML = `
+                            <div class="player-number">${player.lineup_number || ''}</div>
+                            <div class="player-name">${player.lineup_player}</div>
+                        `;
+                        homeSubs.appendChild(playerElement);
+                    });
+                }
+
+                // Allenatore
+                const homeCoach = document.getElementById('home-coach');
+                if (home.coach && home.coach[0]) {
+                    homeCoach.textContent = home.coach[0].lineup_player || '-';
+                }
+            }
+
+            // Formazioni trasferta
+            if (matchData.lineup && matchData.lineup.away) {
+                const away = matchData.lineup.away;
+
+                // Titolari
+                const awayStarters = document.getElementById('away-starters');
+                awayStarters.innerHTML = '';
+                if (away.starting_lineups && Array.isArray(away.starting_lineups)) {
+                    away.starting_lineups.forEach(player => {
+                        const playerElement = document.createElement('div');
+                        playerElement.className = 'player-item';
+                        playerElement.innerHTML = `
+                            <div class="player-number">${player.lineup_number || ''}</div>
+                            <div class="player-name">${player.lineup_player}</div>
+                        `;
+                        awayStarters.appendChild(playerElement);
+                    });
+                }
+
+                // Panchina
+                const awaySubs = document.getElementById('away-subs');
+                awaySubs.innerHTML = '';
+                if (away.substitutes && Array.isArray(away.substitutes)) {
+                    away.substitutes.forEach(player => {
+                        const playerElement = document.createElement('div');
+                        playerElement.className = 'player-item';
+                        playerElement.innerHTML = `
+                            <div class="player-number">${player.lineup_number || ''}</div>
+                            <div class="player-name">${player.lineup_player}</div>
+                        `;
+                        awaySubs.appendChild(playerElement);
+                    });
+                }
+
+                // Allenatore
+                const awayCoach = document.getElementById('away-coach');
+                if (away.coach && away.coach[0]) {
+                    awayCoach.textContent = away.coach[0].lineup_player || '-';
+                }
+            }
+        }
+
+        function renderStatistics() {
+            const container = document.getElementById('statistics-container');
+            container.innerHTML = '';
+
+            // Statistiche principali
+            const mainStats = [
+                { key: 'Ball Possession', label: 'Possesso palla', icon: 'fa-futbol' },
+                { key: 'Shots Total', label: 'Tiri totali', icon: 'fa-crosshairs' },
+                { key: 'Shots On Goal', label: 'Tiri in porta', icon: 'fa-bullseye' },
+                { key: 'Saves', label: 'Parate', icon: 'fa-hand-paper' },
+                { key: 'Corners', label: 'Calci d\'angolo', icon: 'fa-flag' },
+                { key: 'Fouls', label: 'Falli', icon: 'fa-exclamation-triangle' },
+                { key: 'Offsides', label: 'Fuorigioco', icon: 'fa-arrows-alt-h' },
+                { key: 'Yellow Cards', label: 'Ammonizioni', icon: 'fa-square yellow' },
+                { key: 'Red Cards', label: 'Espulsioni', icon: 'fa-square red' }
+            ];
+
+            if (matchData.statistics && Array.isArray(matchData.statistics)) {
+                mainStats.forEach(stat => {
+                    const statItem = matchData.statistics.find(s => s.type === stat.key);
+                    if (statItem) {
+                        const statElement = document.createElement('div');
+                        statElement.className = 'stat-card';
+
+                        let homeValue = statItem.home;
+                        let awayValue = statItem.away;
+
+                        // Gestione possesso palla
+                        if (stat.key === 'Ball Possession') {
+                            const possessionStat = matchData.statistics.find(s =>
+                                s.type === 'Ball Possession' && (s.home.includes('%') || s.away.includes('%'))
+                            );
+                            if (possessionStat) {
+                                homeValue = possessionStat.home;
+                                awayValue = possessionStat.away;
+                            }
+                        }
+
+                        statElement.innerHTML = `
+                            <div class="stat-header">
+                                <i class="fas ${stat.icon}"></i> ${stat.label}
+                            </div>
+                            <div class="stat-bar-container">
+                                <div class="stat-bar">
+                                    <div class="stat-value home-value">${homeValue}</div>
+                                    <div class="stat-bar-fill" style="width: ${getPercentage(homeValue, awayValue)}%"></div>
+                                    <div class="stat-value away-value">${awayValue}</div>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(statElement);
+                    }
+                });
+            }
+
+            if (container.children.length === 0) {
+                container.innerHTML = '<div class="no-stats">Statistiche non disponibili</div>';
+            }
+        }
+
+        function getPercentage(home, away) {
+            // Per valori percentuali
+            if (home.includes('%')) {
+                return parseInt(home) || 50;
+            }
+
+            // Per valori numerici
+            const homeNum = parseFloat(home) || 0;
+            const awayNum = parseFloat(away) || 0;
+            const total = homeNum + awayNum;
+
+            if (total === 0) return 50;
+            return Math.round((homeNum / total) * 100);
+        }
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Caricamento dati partita...');
+            renderMatchInfo();
+            renderEvents();
+            renderLineup();
+            renderStatistics();
+        });
+    </script>
+</body>
+</html>
