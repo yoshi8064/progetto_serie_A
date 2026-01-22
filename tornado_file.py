@@ -9,7 +9,7 @@ country_id = '5'
 league_id = '207'
 
 # richiede il palinsesto dei prossimi 7 giorni
-start = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+start = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
 stop = (datetime.datetime.now() + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
 
 clients = set()
