@@ -40,14 +40,6 @@ class matchHandler(tornado.web.RequestHandler):
             self.render("match.html", match_data_json=json.dumps(response_data[0]))
 
 
-class leagueHandler(tornado.web.RequestHandler):
-    def get(self):
-        url_classifica = f"https://apiv3.apifootball.com/?action=get_standings&league_id={league_id}&APIkey={API_KEY}"
-        response = requests.get(url_classifica)
-        league_data = response.json()
-        self.render("league.html", league_data=league_data)
-
-
 class WSHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
