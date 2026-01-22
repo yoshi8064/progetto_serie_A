@@ -96,7 +96,6 @@ async def main():
             (r"/", tornado.web.RedirectHandler, {"url": "/sports"}),
             (r"/sports", sportsHandler),
             (r"/sports/([0-9]+)", matchHandler),
-            (r"/sports/league", leagueHandler),
             (r"/ws/matches", WSHandler),
             (r"/styles/(.*)", tornado.web.StaticFileHandler, {"path": "styles"})
         ],
